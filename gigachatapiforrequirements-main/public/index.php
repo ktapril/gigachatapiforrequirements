@@ -48,9 +48,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                                     $gigaClient = new GigaChatClient($authKey);
                                     $aiResult = $gigaClient->checkForAI($text);
+                                    $requirementsResult = $gigaClient->checkForRequirements($text);
 
                                     $message = 'файл успешно загружен и проверен. попытка списана';
                                     $message .= '<br>результат проверки на ИИ: ' . htmlspecialchars($aiResult);
+                                    $message .= '<br>результат проверки на соответствие требованиям:<br>' . htmlspecialchars($requirementsResult);
 
                                 } catch (Exception $e) {
                                     $message = 'ошибка при обработке: ' . $e->getMessage();
