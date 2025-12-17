@@ -1,6 +1,7 @@
 <?php
 
 use GuzzleHttp\Client;
+use Smalot\PdfParser\Parser;
 
 class FileHandler
 {
@@ -53,6 +54,8 @@ class FileHandler
 
     private function extractFromPdf($filePath)
     {
-        throw new Exception('извлечение из PDF временно не поддерживается. реализуйте через smalot/pdfparser.');
+        $parser = new Parser();
+        $pdf = $parser->parseFile($filePath);
+        return $pdf->getText();
     }
 }
