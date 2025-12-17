@@ -4,6 +4,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use App\Auth;
 use App\FileHandler;
+use App\GigaChatClient;
 
 $message = '';
 $auth = new Auth();
@@ -37,9 +38,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 try {
                                     $fileHandler = new FileHandler();
                                     $text = $fileHandler->extractText($uploadPath, $fileExtension);
-                                    $message = 'файл успешно загружен и текст извлечен. попытка списана';
+
+                                    $apiConfig = json_decode(file_get_contents('../config/api_keys.json'), true);
+                                    $authKey = $apiConfig['gigachat_auth_key'];
+
+                                    if (!$authKey) {
+                                        throw new Exception('Authorization Key не найден в config/api_keys.json.');
+                                    }
+
+                                    $gigaClient = new GigaChatClient($authKey);
+                                    $aiResult = $gigaClient->checkForAI($text);
+
+                                    $message = 'файл успешно загружен и проверен. попытка списана';
+                                    $message .= '<br>результат проверки на ИИ: ' . htmlspecialchars($aiResult);
+
                                 } catch (Exception $e) {
-                                    $message = 'ошибка при извлечении текста: ' . $e->getMessage();
+                                    $message = 'ошибка при обработке: ' . $e->getMessage();
                                 }
                                 unlink($uploadPath);
                             } else {
@@ -72,14 +86,14 @@ $attempts_left = isset($_SESSION['attempts_left']) ? $_SESSION['attempts_left'] 
     <h1>сервис для проверки студенческих работ</h1>
 
     <?php if ($message): ?>
-        <p><strong><?php echo htmlspecialchars($message); ?></strong></p>
+        <p><strong><?php echo $message; ?></strong></p>
     <?php endif; ?>
 
     <?php if (isset($_SESSION['user_login'])): ?>
-        <p><?php echo htmlspecialchars($_SESSION['user_login']); ?>!</p>
-        <p>у тебя осталось попыток: <?php echo $attempts_left; ?></p>
+        <p> <?php echo htmlspecialchars($_SESSION['user_login']); ?>!</p>
+        <p>осталось попыток: <?php echo $attempts_left; ?></p>
 
-        <h2>загрузить отчет</h2>
+        <h2>загрузить работу</h2>
         <form method="post" enctype="multipart/form-data">
             <input type="file" name="file" accept=".txt,.docx,.pdf" required>
             <button type="submit" name="upload">загрузить и проверить</button>
