@@ -1,3 +1,4 @@
 {
-    "gigachat_api_key": ""
+    "gigachat_client_id": "",
+    "gigachat_client_secret": ""
 }
