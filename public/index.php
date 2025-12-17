@@ -1,8 +1,9 @@
 <?php
 session_start();
-require_once __DIR__ . '/../vendor/autoload.php'; 
+require_once __DIR__ . '/../vendor/autoload.php';
 
 use App\Auth;
+use App\FileHandler;
 
 $message = '';
 $auth = new Auth();
@@ -20,19 +21,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $attempts = $auth->getUserAttemptsLeft();
             if ($attempts <= 0) {
-                $message = 'попытки закончились.';
+                $message = 'попытки закончились :(';
             } else {
                 if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
                     $fileName = $_FILES['file']['name'];
                     $fileTmpName = $_FILES['file']['tmp_name'];
-                    $fileType = $_FILES['file']['type'];
                     $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
                     $allowedExtensions = ['txt', 'docx', 'pdf'];
                     if (in_array($fileExtension, $allowedExtensions)) {
                         $decrementResult = $auth->decrementAttempts();
                         if ($decrementResult['success']) {
-                            $message = 'файл успешно загружен';
+                            $uploadPath = '../storage/uploads/' . uniqid() . '_' . $fileName;
+                            if (move_uploaded_file($fileTmpName, $uploadPath)) {
+                                try {
+                                    $fileHandler = new FileHandler();
+                                    $text = $fileHandler->extractText($uploadPath, $fileExtension);
+                                    $message = 'файл успешно загружен и текст извлечен. попытка списана';
+                                } catch (Exception $e) {
+                                    $message = 'ошибка при извлечении текста: ' . $e->getMessage();
+                                }
+                                unlink($uploadPath);
+                            } else {
+                                $message = 'ошибка при сохранении файла';
+                            }
                         } else {
                             $message = $decrementResult['message'];
                         }
@@ -64,13 +76,13 @@ $attempts_left = isset($_SESSION['attempts_left']) ? $_SESSION['attempts_left'] 
     <?php endif; ?>
 
     <?php if (isset($_SESSION['user_login'])): ?>
-        <p>ккк <?php echo htmlspecialchars($_SESSION['user_login']); ?>!</p>
-        <p>осталось попыток: <?php echo $attempts_left; ?></p>
+        <p>уважаемый, <?php echo htmlspecialchars($_SESSION['user_login']); ?>!</p>
+        <p>у тебя осталось попыток: <?php echo $attempts_left; ?></p>
 
-        <h2>загрузить работу</h2>
+        <h2>загрузить отчет</h2>
         <form method="post" enctype="multipart/form-data">
             <input type="file" name="file" accept=".txt,.docx,.pdf" required>
-            <button type="submit" name="upload">хагрузить и проверить</button>
+            <button type="submit" name="upload">загрузить и проверить</button>
         </form>
 
     <?php else: ?>
