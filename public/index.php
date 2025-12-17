@@ -76,7 +76,7 @@ $attempts_left = isset($_SESSION['attempts_left']) ? $_SESSION['attempts_left'] 
     <?php endif; ?>
 
     <?php if (isset($_SESSION['user_login'])): ?>
-        <p>уважаемый, <?php echo htmlspecialchars($_SESSION['user_login']); ?>!</p>
+        <p><?php echo htmlspecialchars($_SESSION['user_login']); ?>!</p>
         <p>у тебя осталось попыток: <?php echo $attempts_left; ?></p>
 
         <h2>загрузить отчет</h2>
