@@ -3,7 +3,7 @@
         'name' => 'ktapril/gigachatapiforrequirements',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'd918102288aa2f77f443fd024d577ee91b4b3747',
+        'reference' => '68a20ee8178c7cb4b43487fc9e7c1a301fcea2cb',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -40,7 +40,7 @@
         'ktapril/gigachatapiforrequirements' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'd918102288aa2f77f443fd024d577ee91b4b3747',
+            'reference' => '68a20ee8178c7cb4b43487fc9e7c1a301fcea2cb',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

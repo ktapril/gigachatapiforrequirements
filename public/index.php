@@ -11,25 +11,29 @@ $messageType = 'info';
 $auth = new Auth();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    var_dump($_POST); // <-- Отладка: посмотрим, что приходит в $_POST
+
     if (isset($_POST['register'])) {
         $result = $auth->register($_POST['login'], $_POST['password']);
         $message = $result['message'];
         $messageType = $result['success'] ? 'success' : 'error';
     } elseif (isset($_POST['do_login'])) {
-    $result = $auth->login($_POST['user_login'], $_POST['user_password']);
+    $result = $auth->login($_POST['login'], $_POST['password']);
     $message = $result['message'];
-}
     } elseif (isset($_POST['upload'])) {
+        error_log("Upload started");
         if (!isset($_SESSION['user_login'])) {
             $message = 'сначала авторизуйтесь';
             $messageType = 'error';
         } else {
             $attempts = $auth->getUserAttemptsLeft();
+            error_log("Attempts left: " . $attempts);
             if ($attempts <= 0) {
                 $message = 'попытки закончились :(';
                 $messageType = 'error';
             } else {
                 if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
+                    error_log("File uploaded successfully to temp");
                     $fileName = $_FILES['file']['name'];
                     $fileTmpName = $_FILES['file']['tmp_name'];
                     $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
@@ -37,13 +41,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $allowedExtensions = ['txt', 'docx', 'pdf'];
                     if (in_array($fileExtension, $allowedExtensions)) {
                         $decrementResult = $auth->decrementAttempts();
+                        error_log("Decrement result: " . print_r($decrementResult, true));
                         if ($decrementResult['success']) {
                             $uploadPath = '../storage/uploads/' . uniqid() . '_' . $fileName;
                             if (move_uploaded_file($fileTmpName, $uploadPath)) {
+                                error_log("File moved to: " . $uploadPath);
                                 try {
                                     $fileHandler = new FileHandler();
                                     $text = $fileHandler->extractText($uploadPath, $fileExtension);
+                                    error_log("Text extracted, length: " . strlen($text));
 
+                                    // Загружаем API-ключ
                                     $apiConfig = json_decode(file_get_contents('../config/api_keys.json'), true);
                                     $authKey = $apiConfig['gigachat_auth_key'];
 
@@ -63,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     $message = 'ошибка при обработке: ' . $e->getMessage();
                                     $messageType = 'error';
                                 }
-                                unlink($uploadPath);
+                                unlink($uploadPath); // Удаляем временный файл
                             } else {
                                 $message = 'ошибка при сохранении файла';
                                 $messageType = 'error';
@@ -83,6 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     }
+}
 
 $attempts_left = isset($_SESSION['attempts_left']) ? $_SESSION['attempts_left'] : null;
 ?>
@@ -124,10 +133,11 @@ $attempts_left = isset($_SESSION['attempts_left']) ? $_SESSION['attempts_left'] 
 
             <h2>вход</h2>
             <form method="post">
-    <input type="text" name="user_login" placeholder="логин" required>
-    <input type="password" name="user_password" placeholder="пароль" required>
+    <input type="text" name="login" placeholder="логин" required>
+    <input type="password" name="password" placeholder="пароль" required>
     <button type="submit" name="do_login">войти</button>
 </form>
+            </form>
         <?php endif; ?>
     </div>
 </body>

@@ -1,6 +1,7 @@
 <?php
 
-use GuzzleHttp\Client;
+namespace App;
+
 use Smalot\PdfParser\Parser;
 
 class FileHandler
@@ -24,13 +25,13 @@ class FileHandler
             case 'pdf':
                 return $this->extractFromPdf($filePath);
             default:
-                throw new Exception('неподдерживаемый формат файла.');
+                throw new \Exception('неподдерживаемый формат файла');
         }
     }
 
     private function extractFromDocx($filePath)
     {
-        $zip = new ZipArchive();
+        $zip = new \ZipArchive();
         if ($zip->open($filePath) === TRUE) {
             $xml = $zip->getFromName('word/document.xml');
             $zip->close();
@@ -39,17 +40,17 @@ class FileHandler
                 $striped = $this->stripXml($xml);
                 return $striped;
             } else {
-                throw new Exception('не удалось извлечь текст из .docx');
+                throw new \Exception('не удалось извлечь текст из .docx');
             }
         } else {
-            throw new Exception('не удалось открыть .docx файл');
+            throw new \Exception('не удалось открыть .docx файл');
         }
     }
 
     private function stripXml($xml)
     {
-        $xml = preg_replace('/<[^>]*>/', ' ', $xml);
-        return trim(html_entity_decode($xml, ENT_XML1, 'UTF-8'));
+        $xml = \preg_replace('/<[^>]*>/', ' ', $xml);
+        return \trim(\html_entity_decode($xml, \ENT_XML1, 'UTF-8'));
     }
 
     private function extractFromPdf($filePath)
