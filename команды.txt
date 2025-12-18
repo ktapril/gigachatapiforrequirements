@@ -11,3 +11,33 @@ php -r "echo password_hash('xxx', PASSWORD_DEFAULT);"
 
 проверка, правильно ли хэшируется пароль:
 php test.php
+
+получить последние изменения с гитхаб:
+git pull origin main
+
+удалить файл из диска принудительно: 
+git rm -f --cached ...
+
+инициализировать локальный репозиторий:
+git init
+
+скачать репозиторий с гитхаб:
+git clone ссылка
+
+удалить папку принудительно:
+Remove-Item -Recurse -Force ххх
+
+установить зависимости из composer.json:
+php composer.phar install
+
+обновить зависимости:
+php composer.phar update
+
+показать список файлов в папке:
+dir
+
+удалить файл:
+del ххх
+
+создать папку:
+mkdir -p ххх
