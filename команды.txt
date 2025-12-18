@@ -5,3 +5,9 @@ php -S localhost:8000 -t public/
 git add .
 git commit --m "xxx"
 git push
+
+генерация хэша для пароля:
+php -r "echo password_hash('xxx', PASSWORD_DEFAULT);"
+
+проверка, правильно ли хэшируется пароль:
+php test.php
