@@ -12,6 +12,6 @@
     {
         "login": "cherry",
         "password_hash": "$2y$12$.W9d46fAf0SKE5YVYW.sfeQ\/N.MDxHGjUtRsjG8IYyBbgsCkVAi4.",
-        "attempts_left": 2
+        "attempts_left": 0
     }
 ]
