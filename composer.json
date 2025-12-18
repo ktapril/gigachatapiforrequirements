@@ -3,8 +3,7 @@
     "description": "сервис для проверки студенческих работ на соответствие требованиям",
     "type": "project",
     "require": {
-        "guzzlehttp/guzzle": "^7.0",
-        "smalot/pdfparser": "^2.12"
+        "guzzlehttp/guzzle": "^7.0"
     },
     "autoload": {
         "psr-4": {

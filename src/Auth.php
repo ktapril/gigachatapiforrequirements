@@ -68,7 +68,7 @@ class Auth
         foreach ($users as &$user) {
             if ($user['login'] === $_SESSION['user_login']) {
                 if ($user['attempts_left'] <= 0) {
-                    return ['success' => false, 'message' => 'попытки закончились'];
+                    return ['success' => false, 'message' => 'попытки закончились :('];
                 }
                 $user['attempts_left']--;
                 $_SESSION['attempts_left'] = $user['attempts_left'];
