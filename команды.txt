@@ -1,5 +1,7 @@
-php -S localhost:8000 -t public/ - запуск сервера
+запуск сервера:
+php -S localhost:8000 -t public/ 
+
 добавить коммит:
 git add .
-git commit --m"xxx"
+git commit --m "xxx"
 git push

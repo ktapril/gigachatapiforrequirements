@@ -10,6 +10,9 @@ $message = '';
 $messageType = 'info'; 
 $auth = new Auth();
 
+// что приходит в $_POST
+var_dump($_POST);
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['register'])) {
         $result = $auth->register($_POST['login'], $_POST['password']);
