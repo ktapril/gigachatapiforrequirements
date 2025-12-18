@@ -32,13 +32,16 @@ class Auth
         $users = $this->loadUsers();
 
         foreach ($users as $user) {
+            error_log("Checking user: " . $user['login'] . " vs " . $login);
             if ($user['login'] === $login && password_verify($password, $user['password_hash'])) {
+                error_log("Login successful for: " . $login);
                 $_SESSION['user_login'] = $login;
                 $_SESSION['attempts_left'] = $user['attempts_left'];
                 return ['success' => true, 'message' => 'вход выполнен'];
             }
         }
 
+        error_log("Login failed for: " . $login);
         return ['success' => false, 'message' => 'неверный логин или пароль'];
     }
 
@@ -68,7 +71,7 @@ class Auth
         foreach ($users as &$user) {
             if ($user['login'] === $_SESSION['user_login']) {
                 if ($user['attempts_left'] <= 0) {
-                    return ['success' => false, 'message' => 'попытки закончились :('];
+                    return ['success' => false, 'message' => 'попытки закончились'];
                 }
                 $user['attempts_left']--;
                 $_SESSION['attempts_left'] = $user['attempts_left'];
@@ -85,11 +88,11 @@ class Auth
         if (!file_exists($this->usersFile)) {
             return [];
         }
-       return json_decode(file_get_contents($this->usersFile), true, 512, JSON_UNESCAPED_UNICODE);
+        return json_decode(file_get_contents($this->usersFile), true, 512, JSON_UNESCAPED_UNICODE);
     }
 
     private function saveUsers($users)
     {
-        file_put_contents($this->usersFile, json_encode($users, JSON_PRETTY_PRINT));
+        file_put_contents($this->usersFile, json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     }
 }
