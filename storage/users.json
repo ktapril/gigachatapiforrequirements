@@ -1,7 +1,12 @@
 [
     {
         "login": "nyashka",
-        "password_hash": "$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi",
+        "password_hash": "$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC\/.og\/at2.uheWG\/igi",
         "attempts_left": 3
+    },
+    {
+        "login": "\u0447\u0435\u0440\u0440\u0438",
+        "password_hash": "$2y$12$ioWcJlX4ZXJizfxzEbfVP.uspzrhUGGnKGR5mFeZv1aJSLAJhCaia",
+        "attempts_left": 5
     }
 ]

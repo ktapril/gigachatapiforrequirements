@@ -85,7 +85,7 @@ class Auth
         if (!file_exists($this->usersFile)) {
             return [];
         }
-        return json_decode(file_get_contents($this->usersFile), true);
+       return json_decode(file_get_contents($this->usersFile), true, 512, JSON_UNESCAPED_UNICODE);
     }
 
     private function saveUsers($users)
