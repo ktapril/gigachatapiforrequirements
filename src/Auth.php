@@ -29,6 +29,7 @@ class Auth
 
     public function login($login, $password)
     {
+        error_log("Received login: " . $login . " and password: " . $password);
         $users = $this->loadUsers();
 
         foreach ($users as $user) {

@@ -10,18 +10,15 @@ $message = '';
 $messageType = 'info'; 
 $auth = new Auth();
 
-// что приходит в $_POST
-var_dump($_POST);
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['register'])) {
         $result = $auth->register($_POST['login'], $_POST['password']);
         $message = $result['message'];
         $messageType = $result['success'] ? 'success' : 'error';
-    } elseif (isset($_POST['login'])) {
-        $result = $auth->login($_POST['login'], $_POST['password']);
-        $message = $result['message'];
-        $messageType = $result['success'] ? 'success' : 'error';
+    } elseif (isset($_POST['do_login'])) {
+    $result = $auth->login($_POST['user_login'], $_POST['user_password']);
+    $message = $result['message'];
+}
     } elseif (isset($_POST['upload'])) {
         if (!isset($_SESSION['user_login'])) {
             $message = 'сначала авторизуйтесь';
@@ -86,7 +83,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     }
-}
 
 $attempts_left = isset($_SESSION['attempts_left']) ? $_SESSION['attempts_left'] : null;
 ?>
@@ -128,10 +124,10 @@ $attempts_left = isset($_SESSION['attempts_left']) ? $_SESSION['attempts_left'] 
 
             <h2>вход</h2>
             <form method="post">
-                <input type="text" name="login" placeholder="логин" required>
-                <input type="password" name="password" placeholder="пароль" required>
-                <button type="submit" name="login">войти</button>
-            </form>
+    <input type="text" name="user_login" placeholder="логин" required>
+    <input type="password" name="user_password" placeholder="пароль" required>
+    <button type="submit" name="do_login">войти</button>
+</form>
         <?php endif; ?>
     </div>
 </body>

@@ -5,8 +5,13 @@
         "attempts_left": 3
     },
     {
-        "login": "\u0447\u0435\u0440\u0440\u0438",
+        "login": "черри",
         "password_hash": "$2y$12$ioWcJlX4ZXJizfxzEbfVP.uspzrhUGGnKGR5mFeZv1aJSLAJhCaia",
+        "attempts_left": 5
+    },
+    {
+        "login": "cherry",
+        "password_hash": "$2y$12$vt\/7DndlY14u3HKuW5St9uyuSP0JSWfhLhy9iA.FK7Z23KXC1mdPa",
         "attempts_left": 5
     }
 ]
