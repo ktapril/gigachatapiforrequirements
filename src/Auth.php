@@ -4,96 +4,93 @@ namespace App;
 
 class Auth
 {
-    private $usersFile = '../storage/users.json';
+    private $db;
+
+    public function __construct()
+    {
+        $database = new Database();
+        $this->db = $database->getConnection();
+    }
 
     public function register($login, $password)
     {
-        $users = $this->loadUsers();
-        foreach ($users as $user) {
-            if ($user['login'] === $login) {
+        try {
+            $stmt = $this->db->prepare("SELECT id FROM users WHERE login = ?");
+            $stmt->execute([$login]);
+
+            if ($stmt->fetch()) {
                 return ['success' => false, 'message' => 'пользователь уже существует'];
             }
+
+            $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+
+            $stmt = $this->db->prepare("INSERT INTO users (login, password_hash, attempts_left) VALUES (?, ?, 5)");
+            $stmt->execute([$login, $passwordHash]);
+
+            return ['success' => true, 'message' => 'пользователь успешно зарегистрирован'];
+        } catch (\PDOException $e) {
+            return ['success' => false, 'message' => 'ошибка при регистрации: ' . $e->getMessage()];
         }
-
-        $newUser = [
-            'login' => $login,
-            'password_hash' => password_hash($password, PASSWORD_DEFAULT),
-            'attempts_left' => 5 // начальное количество попыток
-        ];
-
-        $users[] = $newUser;
-        $this->saveUsers($users);
-
-        return ['success' => true, 'message' => 'пользователь успешно зарегистрирован'];
     }
 
     public function login($login, $password)
     {
-        error_log("Received login: " . $login . " and password: " . $password);
-        $users = $this->loadUsers();
+        try {
+            $stmt = $this->db->prepare("SELECT id, login, password_hash, attempts_left FROM users WHERE login = ?");
+            $stmt->execute([$login]);
+            $user = $stmt->fetch();
 
-        foreach ($users as $user) {
-            error_log("Checking user: " . $user['login'] . " vs " . $login);
-            if ($user['login'] === $login && password_verify($password, $user['password_hash'])) {
-                error_log("Login successful for: " . $login);
-                $_SESSION['user_login'] = $login;
+            if ($user && password_verify($password, $user['password_hash'])) {
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['user_login'] = $user['login'];
                 $_SESSION['attempts_left'] = $user['attempts_left'];
                 return ['success' => true, 'message' => 'вход выполнен'];
             }
-        }
 
-        error_log("Login failed for: " . $login);
-        return ['success' => false, 'message' => 'неверный логин или пароль'];
+            return ['success' => false, 'message' => 'неверный логин или пароль'];
+        } catch (\PDOException $e) {
+            return ['success' => false, 'message' => 'ошибка при входе: ' . $e->getMessage()];
+        }
     }
 
     public function getUserAttemptsLeft()
     {
-        if (!isset($_SESSION['user_login'])) {
+        if (!isset($_SESSION['user_id'])) {
             return null;
         }
 
-        $users = $this->loadUsers();
-        foreach ($users as $user) {
-            if ($user['login'] === $_SESSION['user_login']) {
-                return $user['attempts_left'];
-            }
-        }
+        try {
+            $stmt = $this->db->prepare("SELECT attempts_left FROM users WHERE id = ?");
+            $stmt->execute([$_SESSION['user_id']]);
+            $result = $stmt->fetch();
 
-        return null;
+            return $result ? $result['attempts_left'] : null;
+        } catch (\PDOException $e) {
+            error_log('Ошибка при получении попыток: ' . $e->getMessage());
+            return null;
+        }
     }
 
     public function decrementAttempts()
     {
-        if (!isset($_SESSION['user_login'])) {
+        if (!isset($_SESSION['user_id'])) {
             return ['success' => false, 'message' => 'пользователь не авторизован'];
         }
 
-        $users = $this->loadUsers();
-        foreach ($users as &$user) {
-            if ($user['login'] === $_SESSION['user_login']) {
-                if ($user['attempts_left'] <= 0) {
-                    return ['success' => false, 'message' => 'попытки закончились'];
-                }
-                $user['attempts_left']--;
-                $_SESSION['attempts_left'] = $user['attempts_left'];
-                $this->saveUsers($users);
-                return ['success' => true, 'message' => 'попытка успешно списана'];
+        try {
+            $attempts = $this->getUserAttemptsLeft();
+            if ($attempts <= 0) {
+                return ['success' => false, 'message' => 'попытки закончились'];
             }
+
+            $stmt = $this->db->prepare("UPDATE users SET attempts_left = attempts_left - 1 WHERE id = ?");
+            $stmt->execute([$_SESSION['user_id']]);
+
+            $_SESSION['attempts_left'] = $attempts - 1;
+
+            return ['success' => true, 'message' => 'попытка успешно списана'];
+        } catch (\PDOException $e) {
+            return ['success' => false, 'message' => 'ошибка обновления попыток: ' . $e->getMessage()];
         }
-
-        return ['success' => false, 'message' => 'ошибка обновления попыток'];
-    }
-
-    private function loadUsers()
-    {
-        if (!file_exists($this->usersFile)) {
-            return [];
-        }
-        return json_decode(file_get_contents($this->usersFile), true, 512, JSON_UNESCAPED_UNICODE);
-    }
-
-    private function saveUsers($users)
-    {
-        file_put_contents($this->usersFile, json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     }
 }

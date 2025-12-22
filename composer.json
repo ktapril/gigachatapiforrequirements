@@ -4,6 +4,7 @@
     "type": "project",
     "require": {
         "guzzlehttp/guzzle": "^7.0"
+        "smalot/pdfparser": "^2.12"
     },
     "autoload": {
         "psr-4": {
