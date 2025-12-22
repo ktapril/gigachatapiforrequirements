@@ -177,22 +177,16 @@ $attempts_left = isset($_SESSION['attempts_left']) ? $_SESSION['attempts_left'] 
             </form>
 
         <?php else: ?>
-            <p>пожалуйста, авторизуйтесь</p>
-            <button onclick="document.getElementById('loginModal').style.display='block'">войти</button>
-            <button onclick="document.getElementById('registerModal').style.display='block'">регистрация</button>
-        <?php endif; ?>
-    </div>
-
-    <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="document.getElementById('loginModal').style.display='none'">&times;</span>
             <h2>вход</h2>
             <form method="post">
                 <input type="text" name="login" placeholder="логин" required>
                 <input type="password" name="password" placeholder="пароль" required>
                 <button type="submit" name="do_login">войти</button>
             </form>
-        </div>
+
+            <br>
+            <button onclick="document.getElementById('registerModal').style.display='block'">регистрация</button>
+        <?php endif; ?>
     </div>
 
     <div id="registerModal" class="modal">
@@ -209,11 +203,7 @@ $attempts_left = isset($_SESSION['attempts_left']) ? $_SESSION['attempts_left'] 
 
     <script>
         window.onclick = function(event) {
-            var loginModal = document.getElementById('loginModal');
             var registerModal = document.getElementById('registerModal');
-            if (event.target == loginModal) {
-                loginModal.style.display = 'none';
-            }
             if (event.target == registerModal) {
                 registerModal.style.display = 'none';
             }

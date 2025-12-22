@@ -10,8 +10,8 @@ class Database
     {
         $host = 'localhost';
         $dbname = 'gigachat_users';
-        $username = 'jimin';  
-        $password = 'jikook13';      
+        $username = 'root';
+$password = '';    
 
         $dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
 
