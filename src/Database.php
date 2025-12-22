@@ -10,8 +10,8 @@ class Database
     {
         $host = 'localhost';
         $dbname = 'gigachat_users';
-        $username = 'jimin';
-        $password = 'jikook13';
+        $username = 'jimin';  
+        $password = 'jikook13';      
 
         $dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
 
@@ -22,7 +22,7 @@ class Database
             ]);
             $this->createTable();
         } catch (\PDOException $e) {
-            throw new \Exception("дключения к базе данных: ' . $e->getMessage());
+            throw new \Exception('Ошибка подключения к базе данных: ' . $e->getMessage());
         }
     }
 
