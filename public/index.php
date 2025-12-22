@@ -7,7 +7,7 @@ use App\FileHandler;
 use App\GigaChatClient;
 
 $message = '';
-$messageType = 'info'; 
+$messageType = 'info'; // info, success, error
 $auth = new Auth();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -18,8 +18,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = $result['message'];
         $messageType = $result['success'] ? 'success' : 'error';
     } elseif (isset($_POST['do_login'])) {
-    $result = $auth->login($_POST['login'], $_POST['password']);
-    $message = $result['message'];
+        $result = $auth->login($_POST['login'], $_POST['password']);
+        $message = $result['message'];
+        $messageType = $result['success'] ? 'success' : 'error';
     } elseif (isset($_POST['upload'])) {
         error_log("Upload started");
         if (!isset($_SESSION['user_login'])) {
@@ -60,11 +61,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     }
 
                                     $gigaClient = new GigaChatClient($authKey);
-                                    $aiResult = $gigaClient->checkForAI($text);
-                                    $requirementsResult = $gigaClient->checkForRequirements($text);
 
+                                    // Вызываем все 7 новых методов
+                                    $aiResult = $gigaClient->checkForAI($text);
+                                    $impersonalResult = $gigaClient->checkForImpersonalStyle($text);
+                                    $pastTenseResult = $gigaClient->checkForPastTense($text);
+                                    $introductionResult = $gigaClient->checkForIntroduction($text);
+                                    $mainBodyResult = $gigaClient->checkForMainBody($text);
+                                    $conclusionResult = $gigaClient->checkForConclusion($text);
+                                    $tableResult = $gigaClient->checkForTableFormatting($text);
+                                    $figureResult = $gigaClient->checkForFigureFormatting($text);
+
+                                    // Формируем сообщение с результатами
                                     $message = '<div class="result-section"><h3>Результат проверки на ИИ:</h3><p>' . htmlspecialchars($aiResult) . '</p></div>';
-                                    $message .= '<div class="result-section"><h3>Результат проверки на соответствие требованиям:</h3><p>' . htmlspecialchars($requirementsResult) . '</p></div>';
+                                    $message .= '<div class="result-section"><h3>Проверка безличных конструкций:</h3><p>' . htmlspecialchars($impersonalResult) . '</p></div>';
+                                    $message .= '<div class="result-section"><h3>Проверка глаголов в прошедшем времени:</h3><p>' . htmlspecialchars($pastTenseResult) . '</p></div>';
+                                    $message .= '<div class="result-section"><h3>Проверка введения:</h3><p>' . htmlspecialchars($introductionResult) . '</p></div>';
+                                    $message .= '<div class="result-section"><h3>Проверка основной части:</h3><p>' . htmlspecialchars($mainBodyResult) . '</p></div>';
+                                    $message .= '<div class="result-section"><h3>Проверка заключения:</h3><p>' . htmlspecialchars($conclusionResult) . '</p></div>';
+                                    $message .= '<div class="result-section"><h3>Проверка таблиц:</h3><p>' . htmlspecialchars($tableResult) . '</p></div>';
+                                    $message .= '<div class="result-section"><h3>Проверка иллюстраций:</h3><p>' . htmlspecialchars($figureResult) . '</p></div>';
                                     $messageType = 'success';
 
                                 } catch (Exception $e) {
@@ -133,10 +149,9 @@ $attempts_left = isset($_SESSION['attempts_left']) ? $_SESSION['attempts_left'] 
 
             <h2>вход</h2>
             <form method="post">
-    <input type="text" name="login" placeholder="логин" required>
-    <input type="password" name="password" placeholder="пароль" required>
-    <button type="submit" name="do_login">войти</button>
-</form>
+                <input type="text" name="login" placeholder="логин" required>
+                <input type="password" name="password" placeholder="пароль" required>
+                <button type="submit" name="do_login">войти</button>
             </form>
         <?php endif; ?>
     </div>

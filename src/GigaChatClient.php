@@ -90,34 +90,9 @@ class GigaChatClient
         }
     }
 
-    public function checkForRequirements($text)
+    public function checkForImpersonalStyle($text)
     {
-        // загрузка требований из config/requirements.json
-        $requirementsConfig = json_decode(file_get_contents('../config/requirements.json'), true);
-
-        // промпт на основе требований
-        $requirementTexts = [];
-        if ($requirementsConfig['uses_specialized_terminology']) {
-            $requirementTexts[] = 'Использование специальной терминологии.';
-        }
-        if ($requirementsConfig['no_impersonal_style']) {
-            $requirementTexts[] = 'Избегать безличных конструкций (например, “считается”, “принято считать”).';
-        }
-        if ($requirementsConfig['verbs_in_past_tense_for_work_description']) {
-            $requirementTexts[] = 'Глаголы в прошедшем времени (для описания проделанной работы).';
-        }
-        if ($requirementsConfig['has_introduction_with_goals_tasks']) {
-            $requirementTexts[] = 'Наличие введения с целями и задачами.';
-        }
-        if ($requirementsConfig['has_main_body_with_specific_sections']) {
-            $requirementTexts[] = 'Наличие основной части с определёнными разделами.';
-        }
-        if ($requirementsConfig['has_conclusion_with_results_and_up_to_5_proposals']) {
-            $requirementTexts[] = 'Наличие заключения с результатами и до 3–5 предложений.';
-        }
-
-        $requirementsList = implode("\n- ", $requirementTexts);
-        $prompt = "проверь, соответствует ли следующий текст этим требованиям:\n- $requirementsList\n\nесли какие-то требования не соблюдены - укажи, где именно и как исправить";
+        $prompt = "проверь, избегает ли текст безличных конструкций (например, 'считается', 'принято считать', 'говорится', 'отмечается'). если такие конструкции есть — укажи, где именно.";
 
         try {
             $token = $this->getAccessToken();
@@ -138,14 +113,218 @@ class GigaChatClient
                 ],
             ]);
 
-            $result = json_decode($response->getBody(), true);
+            $result = \json_decode($response->getBody(), true);
 
-            $requirements_check = $result['choices'][0]['message']['content'] ?? 'Не удалось получить ответ';
+            $check_result = $result['choices'][0]['message']['content'] ?? 'не удалось получить ответ';
 
-            return $requirements_check;
+            return $check_result;
 
         } catch (\Exception $e) {
-            return 'Ошибка при обращении к GigaChat API: ' . $e->getMessage();
+            return 'ошибка при обращении к GigaChat API: ' . $e->getMessage();
+        }
+    }
+
+    public function checkForPastTense($text)
+    {
+        $prompt = "проверь, используются ли в тексте глаголы в прошедшем времени (для описания проделанной работы). если нет — укажи, где это нарушено.";
+
+        try {
+            $token = $this->getAccessToken();
+
+            $response = $this->client->post($this->chatUrl, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $token,
+                ],
+                'json' => [
+                    'messages' => [
+                        [
+                            'role' => 'user',
+                            'content' => $prompt . "\n\n" . $text,
+                        ]
+                    ],
+                    'temperature' => 0.1,
+                    'stream' => false,
+                ],
+            ]);
+
+            $result = \json_decode($response->getBody(), true);
+
+            $check_result = $result['choices'][0]['message']['content'] ?? 'не удалось получить ответ';
+
+            return $check_result;
+
+        } catch (\Exception $e) {
+            return 'ошибка при обращении к GigaChat API: ' . $e->getMessage();
+        }
+    }
+
+    public function checkForIntroduction($text)
+    {
+        $prompt = "проверь, есть ли в тексте введение с целями и задачами. если нет — укажи, где это нарушено.";
+
+        try {
+            $token = $this->getAccessToken();
+
+            $response = $this->client->post($this->chatUrl, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $token,
+                ],
+                'json' => [
+                    'messages' => [
+                        [
+                            'role' => 'user',
+                            'content' => $prompt . "\n\n" . $text,
+                        ]
+                    ],
+                    'temperature' => 0.1,
+                    'stream' => false,
+                ],
+            ]);
+
+            $result = \json_decode($response->getBody(), true);
+
+            $check_result = $result['choices'][0]['message']['content'] ?? 'не удалось получить ответ';
+
+            return $check_result;
+
+        } catch (\Exception $e) {
+            return 'ошибка при обращении к GigaChat API: ' . $e->getMessage();
+        }
+    }
+
+    public function checkForMainBody($text)
+    {
+        $prompt = "проверь, есть ли в тексте основная часть с определёнными разделами. если нет — укажи, где это нарушено.";
+
+        try {
+            $token = $this->getAccessToken();
+
+            $response = $this->client->post($this->chatUrl, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $token,
+                ],
+                'json' => [
+                    'messages' => [
+                        [
+                            'role' => 'user',
+                            'content' => $prompt . "\n\n" . $text,
+                        ]
+                    ],
+                    'temperature' => 0.1,
+                    'stream' => false,
+                ],
+            ]);
+
+            $result = \json_decode($response->getBody(), true);
+
+            $check_result = $result['choices'][0]['message']['content'] ?? 'не удалось получить ответ';
+
+            return $check_result;
+
+        } catch (\Exception $e) {
+            return 'ошибка при обращении к GigaChat API: ' . $e->getMessage();
+        }
+    }
+
+    public function checkForConclusion($text)
+    {
+        $prompt = "проверь, есть ли в тексте заключение с результатами и до 3–5 предложений. если нет — укажи, где это нарушено.";
+
+        try {
+            $token = $this->getAccessToken();
+
+            $response = $this->client->post($this->chatUrl, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $token,
+                ],
+                'json' => [
+                    'messages' => [
+                        [
+                            'role' => 'user',
+                            'content' => $prompt . "\n\n" . $text,
+                        ]
+                    ],
+                    'temperature' => 0.1,
+                    'stream' => false,
+                ],
+            ]);
+
+            $result = \json_decode($response->getBody(), true);
+
+            $check_result = $result['choices'][0]['message']['content'] ?? 'не удалось получить ответ';
+
+            return $check_result;
+
+        } catch (\Exception $e) {
+            return 'ошибка при обращении к GigaChat API: ' . $e->getMessage();
+        }
+    }
+
+    public function checkForTableFormatting($text)
+    {
+        $prompt = "проверь, правильно ли оформлены таблицы в тексте. если есть нарушения — укажи, где именно.";
+
+        try {
+            $token = $this->getAccessToken();
+
+            $response = $this->client->post($this->chatUrl, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $token,
+                ],
+                'json' => [
+                    'messages' => [
+                        [
+                            'role' => 'user',
+                            'content' => $prompt . "\n\n" . $text,
+                        ]
+                    ],
+                    'temperature' => 0.1,
+                    'stream' => false,
+                ],
+            ]);
+
+            $result = \json_decode($response->getBody(), true);
+
+            $check_result = $result['choices'][0]['message']['content'] ?? 'не удалось получить ответ';
+
+            return $check_result;
+
+        } catch (\Exception $e) {
+            return 'ошибка при обращении к GigaChat API: ' . $e->getMessage();
+        }
+    }
+
+    public function checkForFigureFormatting($text)
+    {
+        $prompt = "проверь, правильно ли оформлены иллюстрации в тексте. если есть нарушения — укажи, где именно.";
+
+        try {
+            $token = $this->getAccessToken();
+
+            $response = $this->client->post($this->chatUrl, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $token,
+                ],
+                'json' => [
+                    'messages' => [
+                        [
+                            'role' => 'user',
+                            'content' => $prompt . "\n\n" . $text,
+                        ]
+                    ],
+                    'temperature' => 0.1,
+                    'stream' => false,
+                ],
+            ]);
+
+            $result = \json_decode($response->getBody(), true);
+
+            $check_result = $result['choices'][0]['message']['content'] ?? 'не удалось получить ответ';
+
+            return $check_result;
+
+        } catch (\Exception $e) {
+            return 'ошибка при обращении к GigaChat API: ' . $e->getMessage();
         }
     }
 }
