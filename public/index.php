@@ -7,7 +7,7 @@ use App\FileHandler;
 use App\GigaChatClient;
 
 $message = '';
-$messageType = 'info'; // info, success, error
+$messageType = 'info'; 
 $auth = new Auth();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -52,7 +52,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     $text = $fileHandler->extractText($uploadPath, $fileExtension);
                                     error_log("Text extracted, length: " . strlen($text));
 
-                                    // Загружаем API-ключ
                                     $apiConfig = json_decode(file_get_contents('../config/api_keys.json'), true);
                                     $authKey = $apiConfig['gigachat_auth_key'];
 
@@ -62,7 +61,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                                     $gigaClient = new GigaChatClient($authKey);
 
-                                    // Вызываем все 7 новых методов
                                     $aiResult = $gigaClient->checkForAI($text);
                                     $impersonalResult = $gigaClient->checkForImpersonalStyle($text);
                                     $pastTenseResult = $gigaClient->checkForPastTense($text);
@@ -72,7 +70,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     $tableResult = $gigaClient->checkForTableFormatting($text);
                                     $figureResult = $gigaClient->checkForFigureFormatting($text);
 
-                                    // Формируем сообщение с результатами
                                     $message = '<div class="result-section"><h3>Результат проверки на ИИ:</h3><p>' . htmlspecialchars($aiResult) . '</p></div>';
                                     $message .= '<div class="result-section"><h3>Проверка безличных конструкций:</h3><p>' . htmlspecialchars($impersonalResult) . '</p></div>';
                                     $message .= '<div class="result-section"><h3>Проверка глаголов в прошедшем времени:</h3><p>' . htmlspecialchars($pastTenseResult) . '</p></div>';
@@ -87,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     $message = 'ошибка при обработке: ' . $e->getMessage();
                                     $messageType = 'error';
                                 }
-                                unlink($uploadPath); // Удаляем временный файл
+                                unlink($uploadPath); 
                             } else {
                                 $message = 'ошибка при сохранении файла';
                                 $messageType = 'error';
@@ -118,6 +115,46 @@ $attempts_left = isset($_SESSION['attempts_left']) ? $_SESSION['attempts_left'] 
     <meta charset="UTF-8">
     <title>сервис для проверки студенческих работ</title>
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 300px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: black;
+        }
+
+        .modal form input, .modal form button {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 8px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -140,20 +177,47 @@ $attempts_left = isset($_SESSION['attempts_left']) ? $_SESSION['attempts_left'] 
             </form>
 
         <?php else: ?>
-            <h2>регистрация</h2>
-            <form method="post">
-                <input type="text" name="login" placeholder="логин" required>
-                <input type="password" name="password" placeholder="пароль" required>
-                <button type="submit" name="register">зарегистрироваться</button>
-            </form>
+            <p>пожалуйста, авторизуйтесь</p>
+            <button onclick="document.getElementById('loginModal').style.display='block'">войти</button>
+            <button onclick="document.getElementById('registerModal').style.display='block'">регистрация</button>
+        <?php endif; ?>
+    </div>
 
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="document.getElementById('loginModal').style.display='none'">&times;</span>
             <h2>вход</h2>
             <form method="post">
                 <input type="text" name="login" placeholder="логин" required>
                 <input type="password" name="password" placeholder="пароль" required>
                 <button type="submit" name="do_login">войти</button>
             </form>
-        <?php endif; ?>
+        </div>
     </div>
+
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="document.getElementById('registerModal').style.display='none'">&times;</span>
+            <h2>регистрация</h2>
+            <form method="post">
+                <input type="text" name="login" placeholder="логин" required>
+                <input type="password" name="password" placeholder="пароль" required>
+                <button type="submit" name="register">зарегистрироваться</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        window.onclick = function(event) {
+            var loginModal = document.getElementById('loginModal');
+            var registerModal = document.getElementById('registerModal');
+            if (event.target == loginModal) {
+                loginModal.style.display = 'none';
+            }
+            if (event.target == registerModal) {
+                registerModal.style.display = 'none';
+            }
+        }
+    </script>
 </body>
 </html>
