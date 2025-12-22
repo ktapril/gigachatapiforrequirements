@@ -14,12 +14,14 @@ class GigaChatClient
 
     public function __construct($authKey)
     {
-        $this->authKey = $authKey;
+        // Отключаем проверку SSL-сертификатов
         $this->client = new Client([
             'headers' => [
                 'Content-Type' => 'application/json',
             ],
+            'verify' => false, // <-- Отключение проверки SSL
         ]);
+        $this->authKey = $authKey;
     }
 
     private function getAccessToken()
@@ -33,6 +35,7 @@ class GigaChatClient
                 'form_params' => [
                     'scope' => 'GIGACHAT_API_PERS',
                 ],
+                'verify' => false, // <-- Отключение проверки SSL
             ]);
 
             $result = \json_decode($response->getBody(), true);
@@ -77,6 +80,7 @@ class GigaChatClient
                     'temperature' => 0.1,
                     'stream' => false,
                 ],
+                'verify' => false, // <-- Отключение проверки SSL
             ]);
 
             $result = \json_decode($response->getBody(), true);
@@ -111,6 +115,7 @@ class GigaChatClient
                     'temperature' => 0.1,
                     'stream' => false,
                 ],
+                'verify' => false, // <-- Отключение проверки SSL
             ]);
 
             $result = \json_decode($response->getBody(), true);
@@ -145,6 +150,7 @@ class GigaChatClient
                     'temperature' => 0.1,
                     'stream' => false,
                 ],
+                'verify' => false, // <-- Отключение проверки SSL
             ]);
 
             $result = \json_decode($response->getBody(), true);
@@ -179,6 +185,7 @@ class GigaChatClient
                     'temperature' => 0.1,
                     'stream' => false,
                 ],
+                'verify' => false, // <-- Отключение проверки SSL
             ]);
 
             $result = \json_decode($response->getBody(), true);
@@ -213,6 +220,7 @@ class GigaChatClient
                     'temperature' => 0.1,
                     'stream' => false,
                 ],
+                'verify' => false, // <-- Отключение проверки SSL
             ]);
 
             $result = \json_decode($response->getBody(), true);
@@ -228,7 +236,7 @@ class GigaChatClient
 
     public function checkForConclusion($text)
     {
-        $prompt = "проверь, есть ли в тексте заключение с результатами и до 3–5 предложений. если нет  укажи, где это нарушено.";
+        $prompt = "проверь, есть ли в тексте заключение с результатами и до 3–5 предложений. если нет — укажи, где это нарушено.";
 
         try {
             $token = $this->getAccessToken();
@@ -247,6 +255,7 @@ class GigaChatClient
                     'temperature' => 0.1,
                     'stream' => false,
                 ],
+                'verify' => false, // <-- Отключение проверки SSL
             ]);
 
             $result = \json_decode($response->getBody(), true);
@@ -281,6 +290,7 @@ class GigaChatClient
                     'temperature' => 0.1,
                     'stream' => false,
                 ],
+                'verify' => false, // <-- Отключение проверки SSL
             ]);
 
             $result = \json_decode($response->getBody(), true);
@@ -315,6 +325,7 @@ class GigaChatClient
                     'temperature' => 0.1,
                     'stream' => false,
                 ],
+                'verify' => false, // <-- Отключение проверки SSL
             ]);
 
             $result = \json_decode($response->getBody(), true);
