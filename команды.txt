@@ -41,3 +41,5 @@ del ххх
 
 создать папку:
 mkdir -p ххх
+
+MDE5YjJjM2YtMjZjNy03OGI4LWE2MjktNTM5MTUwMzc2ODAwOjNmYTAyZmVkLTc4OTgtNDc1NC04YjM5LTRmM2E4ZGE1MzRhYQ==

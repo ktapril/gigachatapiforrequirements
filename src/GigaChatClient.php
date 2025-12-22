@@ -14,14 +14,13 @@ class GigaChatClient
 
     public function __construct($authKey)
     {
-        // Отключаем проверку SSL-сертификатов
+        $this->authKey = $authKey;
         $this->client = new Client([
             'headers' => [
                 'Content-Type' => 'application/json',
             ],
-            'verify' => false, // <-- Отключение проверки SSL
+            'verify' => false, // Отключаем SSL для обхода ошибки 60
         ]);
-        $this->authKey = $authKey;
     }
 
     private function getAccessToken()
@@ -35,13 +34,11 @@ class GigaChatClient
                 'form_params' => [
                     'scope' => 'GIGACHAT_API_PERS',
                 ],
-                'verify' => false, // <-- Отключение проверки SSL
+                'verify' => false,
             ]);
 
             $result = \json_decode($response->getBody(), true);
-
             return $result['access_token'];
-
         } catch (RequestException $e) {
             throw new \Exception('ошибка получения токена: ' . $e->getMessage());
         }
@@ -67,30 +64,20 @@ class GigaChatClient
             $token = $this->getAccessToken();
 
             $response = $this->client->post($this->chatUrl, [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $token,
-                ],
+                'headers' => ['Authorization' => 'Bearer ' . $token],
                 'json' => [
-                    'messages' => [
-                        [
-                            'role' => 'user',
-                            'content' => $prompt . "\n\n" . $text,
-                        ]
-                    ],
+                    'model' => 'GigaChat', // ← ОБЯЗАТЕЛЬНО!
+                    'messages' => [['role' => 'user', 'content' => $prompt . "\n\n" . $text]],
                     'temperature' => 0.1,
                     'stream' => false,
                 ],
-                'verify' => false, // <-- Отключение проверки SSL
+                'verify' => false,
             ]);
 
             $result = \json_decode($response->getBody(), true);
-
-            $ai_probability = $result['choices'][0]['message']['content'] ?? 'не удалось получить ответ';
-
-            return $ai_probability;
-
+            return $result['choices'][0]['message']['content'] ?? 'не удалось получить ответ';
         } catch (\Exception $e) {
-            return 'ошибка при обращении к GigaChat API: ' . $e->getMessage();
+            return 'ошибка GigaChat: ' . $e->getMessage();
         }
     }
 
@@ -102,30 +89,20 @@ class GigaChatClient
             $token = $this->getAccessToken();
 
             $response = $this->client->post($this->chatUrl, [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $token,
-                ],
+                'headers' => ['Authorization' => 'Bearer ' . $token],
                 'json' => [
-                    'messages' => [
-                        [
-                            'role' => 'user',
-                            'content' => $prompt . "\n\n" . $text,
-                        ]
-                    ],
+                    'model' => 'GigaChat',
+                    'messages' => [['role' => 'user', 'content' => $prompt . "\n\n" . $text]],
                     'temperature' => 0.1,
                     'stream' => false,
                 ],
-                'verify' => false, // <-- Отключение проверки SSL
+                'verify' => false,
             ]);
 
             $result = \json_decode($response->getBody(), true);
-
-            $check_result = $result['choices'][0]['message']['content'] ?? 'не удалось получить ответ';
-
-            return $check_result;
-
+            return $result['choices'][0]['message']['content'] ?? 'не удалось получить ответ';
         } catch (\Exception $e) {
-            return 'ошибка при обращении к GigaChat API: ' . $e->getMessage();
+            return 'ошибка GigaChat: ' . $e->getMessage();
         }
     }
 
@@ -137,30 +114,20 @@ class GigaChatClient
             $token = $this->getAccessToken();
 
             $response = $this->client->post($this->chatUrl, [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $token,
-                ],
+                'headers' => ['Authorization' => 'Bearer ' . $token],
                 'json' => [
-                    'messages' => [
-                        [
-                            'role' => 'user',
-                            'content' => $prompt . "\n\n" . $text,
-                        ]
-                    ],
+                    'model' => 'GigaChat',
+                    'messages' => [['role' => 'user', 'content' => $prompt . "\n\n" . $text]],
                     'temperature' => 0.1,
                     'stream' => false,
                 ],
-                'verify' => false, // <-- Отключение проверки SSL
+                'verify' => false,
             ]);
 
             $result = \json_decode($response->getBody(), true);
-
-            $check_result = $result['choices'][0]['message']['content'] ?? 'не удалось получить ответ';
-
-            return $check_result;
-
+            return $result['choices'][0]['message']['content'] ?? 'не удалось получить ответ';
         } catch (\Exception $e) {
-            return 'ошибка при обращении к GigaChat API: ' . $e->getMessage();
+            return 'ошибка GigaChat: ' . $e->getMessage();
         }
     }
 
@@ -172,30 +139,20 @@ class GigaChatClient
             $token = $this->getAccessToken();
 
             $response = $this->client->post($this->chatUrl, [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $token,
-                ],
+                'headers' => ['Authorization' => 'Bearer ' . $token],
                 'json' => [
-                    'messages' => [
-                        [
-                            'role' => 'user',
-                            'content' => $prompt . "\n\n" . $text,
-                        ]
-                    ],
+                    'model' => 'GigaChat',
+                    'messages' => [['role' => 'user', 'content' => $prompt . "\n\n" . $text]],
                     'temperature' => 0.1,
                     'stream' => false,
                 ],
-                'verify' => false, // <-- Отключение проверки SSL
+                'verify' => false,
             ]);
 
             $result = \json_decode($response->getBody(), true);
-
-            $check_result = $result['choices'][0]['message']['content'] ?? 'не удалось получить ответ';
-
-            return $check_result;
-
+            return $result['choices'][0]['message']['content'] ?? 'не удалось получить ответ';
         } catch (\Exception $e) {
-            return 'ошибка при обращении к GigaChat API: ' . $e->getMessage();
+            return 'ошибка GigaChat: ' . $e->getMessage();
         }
     }
 
@@ -207,30 +164,20 @@ class GigaChatClient
             $token = $this->getAccessToken();
 
             $response = $this->client->post($this->chatUrl, [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $token,
-                ],
+                'headers' => ['Authorization' => 'Bearer ' . $token],
                 'json' => [
-                    'messages' => [
-                        [
-                            'role' => 'user',
-                            'content' => $prompt . "\n\n" . $text,
-                        ]
-                    ],
+                    'model' => 'GigaChat',
+                    'messages' => [['role' => 'user', 'content' => $prompt . "\n\n" . $text]],
                     'temperature' => 0.1,
                     'stream' => false,
                 ],
-                'verify' => false, // <-- Отключение проверки SSL
+                'verify' => false,
             ]);
 
             $result = \json_decode($response->getBody(), true);
-
-            $check_result = $result['choices'][0]['message']['content'] ?? 'не удалось получить ответ';
-
-            return $check_result;
-
+            return $result['choices'][0]['message']['content'] ?? 'не удалось получить ответ';
         } catch (\Exception $e) {
-            return 'ошибка при обращении к GigaChat API: ' . $e->getMessage();
+            return 'ошибка GigaChat: ' . $e->getMessage();
         }
     }
 
@@ -242,30 +189,20 @@ class GigaChatClient
             $token = $this->getAccessToken();
 
             $response = $this->client->post($this->chatUrl, [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $token,
-                ],
+                'headers' => ['Authorization' => 'Bearer ' . $token],
                 'json' => [
-                    'messages' => [
-                        [
-                            'role' => 'user',
-                            'content' => $prompt . "\n\n" . $text,
-                        ]
-                    ],
+                    'model' => 'GigaChat',
+                    'messages' => [['role' => 'user', 'content' => $prompt . "\n\n" . $text]],
                     'temperature' => 0.1,
                     'stream' => false,
                 ],
-                'verify' => false, // <-- Отключение проверки SSL
+                'verify' => false,
             ]);
 
             $result = \json_decode($response->getBody(), true);
-
-            $check_result = $result['choices'][0]['message']['content'] ?? 'не удалось получить ответ';
-
-            return $check_result;
-
+            return $result['choices'][0]['message']['content'] ?? 'не удалось получить ответ';
         } catch (\Exception $e) {
-            return 'ошибка при обращении к GigaChat API: ' . $e->getMessage();
+            return 'ошибка GigaChat: ' . $e->getMessage();
         }
     }
 
@@ -277,30 +214,20 @@ class GigaChatClient
             $token = $this->getAccessToken();
 
             $response = $this->client->post($this->chatUrl, [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $token,
-                ],
+                'headers' => ['Authorization' => 'Bearer ' . $token],
                 'json' => [
-                    'messages' => [
-                        [
-                            'role' => 'user',
-                            'content' => $prompt . "\n\n" . $text,
-                        ]
-                    ],
+                    'model' => 'GigaChat',
+                    'messages' => [['role' => 'user', 'content' => $prompt . "\n\n" . $text]],
                     'temperature' => 0.1,
                     'stream' => false,
                 ],
-                'verify' => false, // <-- Отключение проверки SSL
+                'verify' => false,
             ]);
 
             $result = \json_decode($response->getBody(), true);
-
-            $check_result = $result['choices'][0]['message']['content'] ?? 'не удалось получить ответ';
-
-            return $check_result;
-
+            return $result['choices'][0]['message']['content'] ?? 'не удалось получить ответ';
         } catch (\Exception $e) {
-            return 'ошибка при обращении к GigaChat API: ' . $e->getMessage();
+            return 'ошибка GigaChat: ' . $e->getMessage();
         }
     }
 
@@ -312,30 +239,20 @@ class GigaChatClient
             $token = $this->getAccessToken();
 
             $response = $this->client->post($this->chatUrl, [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $token,
-                ],
+                'headers' => ['Authorization' => 'Bearer ' . $token],
                 'json' => [
-                    'messages' => [
-                        [
-                            'role' => 'user',
-                            'content' => $prompt . "\n\n" . $text,
-                        ]
-                    ],
+                    'model' => 'GigaChat',
+                    'messages' => [['role' => 'user', 'content' => $prompt . "\n\n" . $text]],
                     'temperature' => 0.1,
                     'stream' => false,
                 ],
-                'verify' => false, // <-- Отключение проверки SSL
+                'verify' => false,
             ]);
 
             $result = \json_decode($response->getBody(), true);
-
-            $check_result = $result['choices'][0]['message']['content'] ?? 'не удалось получить ответ';
-
-            return $check_result;
-
+            return $result['choices'][0]['message']['content'] ?? 'не удалось получить ответ';
         } catch (\Exception $e) {
-            return 'ошибка при обращении к GigaChat API: ' . $e->getMessage();
+            return 'ошибка GigaChat: ' . $e->getMessage();
         }
     }
 }
