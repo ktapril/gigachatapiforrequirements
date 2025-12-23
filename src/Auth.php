@@ -64,7 +64,7 @@ class Auth
             $stmt->execute([$_SESSION['user_id']]);
             $result = $stmt->fetch();
 
-            return $result ? $result['attempts_left'] : null;
+            return $result ? (int)$result['attempts_left'] : null;
         } catch (\PDOException $e) {
             error_log('Ошибка при получении попыток: ' . $e->getMessage());
             return null;
