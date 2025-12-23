@@ -62,7 +62,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     $gigaClient = new GigaChatClient($authKey);
 
                                     $aiResult = $gigaClient->checkForAI($text);
-                                    $impersonalResult = $gigaClient->checkForImpersonalStyle($text);
                                     $pastTenseResult = $gigaClient->checkForPastTense($text);
                                     $introductionResult = $gigaClient->checkForIntroduction($text);
                                     $mainBodyResult = $gigaClient->checkForMainBody($text);
@@ -71,7 +70,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     $figureResult = $gigaClient->checkForFigureFormatting($text);
 
                                     $message = '<div class="result-section"><h3>Результат проверки на ИИ:</h3><p>' . htmlspecialchars($aiResult) . '</p></div>';
-                                    $message .= '<div class="result-section"><h3>Проверка безличных конструкций:</h3><p>' . htmlspecialchars($impersonalResult) . '</p></div>';
                                     $message .= '<div class="result-section"><h3>Проверка глаголов в прошедшем времени:</h3><p>' . htmlspecialchars($pastTenseResult) . '</p></div>';
                                     $message .= '<div class="result-section"><h3>Проверка введения:</h3><p>' . htmlspecialchars($introductionResult) . '</p></div>';
                                     $message .= '<div class="result-section"><h3>Проверка основной части:</h3><p>' . htmlspecialchars($mainBodyResult) . '</p></div>';
