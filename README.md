@@ -21,7 +21,41 @@
 - HTML / CSS / JS
 - GitHub
 
-# как установить 
+# как установить:
 
-склонируйте репозиторий
-git clone https://github.com/ktapril/gigachatapiforrequirements.git 
+1. склонируйте репозиторий
+2. установите зависимости:
+composer install
+3. создайте папку для данных:
+md storage
+4. настройте API-ключ GigaChat
+5. запустите встроенный сервер PHP:
+php -S localhost:8000 -t public/
+
+**как получить ключ:** 
+1. перейдите на Sber Developer Studio: https://developers.sber.ru/
+2. создайте проект и выберите GigaChat API
+3. перейдите в «настроить API» и нажмите «получить новый ключ»
+4. скопируйте Authorization Key (он выглядит как длинная строка в формате Base64)
+5. вставьте его вместо текста в файле:
+{
+  "gigachat_auth_key": "aGVsbG86d29ybGQ="
+}
+6. сохраните как config/api_keys.json (без .example)
+
+**как изменить промпты:** 
+все промпты находятся в файле:
+src/GigaChatClient.php
+
+пример:
+$prompt = "проверь, избегает ли текст безличных конструкций...";
+вы можете редактировать любой промпт, чтобы адаптировать проверку под ваши требования
+
+#структура проекта:
+├── public/             # публичные файлы (входная точка index.php)
+├── src/                # бизнес-логика (Auth, Database, GigaChatClient)
+├── config/             # конфигурация (api_keys.json)
+├── storage/            # данные (база users.db, загруженные файлы)
+├── vendor/             # зависимости Composer 
+├── composer.json       # список зависимостей
+└── README.md           # этот файл
